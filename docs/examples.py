@@ -62,12 +62,12 @@ class UbiAPI(object):
 
     # CHANGE THE AUTH TOKEN
     # ////////////////////////////////////
-    def auth(self, token=None, login=None):
+    def auth(self, token=None, login=None, proxies=None):
         if token is not None:
             self.headers["Authorization"] = token
         
         if login is not None:
-            self.headers["Authorization"] = self.login(account=login, proxies=None)[1]
+            self.headers["Authorization"] = self.login(account=login, proxies=proxies)[1]
 
 
     # LOGIN TO AN ACCOUNT EMAIL:PASSWORD
@@ -82,12 +82,13 @@ class UbiAPI(object):
 
     # CHANGE ACCOUNT NAME
     # ////////////////////////////////////
-    def change_name(self, user_id=None, name=None, login=None, proxies=None): # LOGIN = "EMAIL:PASSWORD"
+    def change_name(self, name=None, login=None, proxies=None):
         if login is not None:
             headers=self.headers
-            headers["Authorization"] = self.login(account=login)[1]
+            login = self.login(account=login, proxies=proxies)
+            headers["Authorization"] = login[1]
 
-        check_1 = self.session.post(f"https://public-ubiservices.ubi.com/v3/profiles/{user_id}/validateUpdate", data={"nameOnPlatform": name}, headers=headers, proxies=proxies)
+        check_1 = self.session.post(f"https://public-ubiservices.ubi.com/v3/profiles/{login[0]['userId']}/validateUpdate", data={"nameOnPlatform": name}, headers=headers, proxies=proxies)
         check_2 = self.session.put("https://public-ubiservices.ubi.com/v3/profiles/", data={"nameOnPlatform": name}, headers=headers, proxies=proxies)
 
         return [check_1.json(), check_2.json()] # RETURNS LIST INDEX [0, 1]
@@ -102,9 +103,9 @@ class UbiAPI(object):
 
     # ADD A FRIEND
     # ////////////////////////////////////
-    def add_friend(self, friend_id=None, account=None):
+    def add_friend(self, friend_id=None, account=None, proxies=None):
         headers = self.headers
-        login = self.login(account=account, proxies=None)
+        login = self.login(account=account, proxies=proxies)
         headers["ubi-sessionid"] = login[0]['sessionId']
         headers["Authorization"] = login[1]
         r = self.session.post(f"https://public-ubiservices.ubi.com/v3/profiles/{login[0]['userId']}/friends", json={"friends": [friend_id]}, headers=headers)
@@ -112,9 +113,8 @@ class UbiAPI(object):
 
 
 
-
 if __name__ == "__main__":
-    ubi = UbiAPI(UbiAPI(None).login(account="email:password", proxies=None)[1])
+    ubi = UbiAPI(UbiAPI(None).login(account="email:password")[1])
     auth_token = ubi.auth
 
     print(
