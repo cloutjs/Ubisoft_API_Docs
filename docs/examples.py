@@ -16,7 +16,7 @@ class UbiAPI(object):
     # CREATE A NEW ACCOUNT
     # ////////////////////////////////////
     def create_account(self, name=None, email=None, password=None, proxies=None):
-        data = {
+        body = {
             'age': None,
             'confirmedEmail': email,
             'country': "GB",
@@ -31,7 +31,7 @@ class UbiAPI(object):
             'preferredLanguage': "en"
         }
 
-        r = self.session.post("https://public-ubiservices.ubi.com/v3/users", json=data, headers=self.headers, proxies=proxies)
+        r = self.session.post("https://public-ubiservices.ubi.com/v3/users", json=body, headers=self.headers, proxies=proxies)
         return r.json()
 
 
@@ -86,9 +86,8 @@ class UbiAPI(object):
         if login is not None:
             headers = self.login(login)
 
-        body={"nameOnPlatform": name}
-        check_1 = self.session.post(f"https://public-ubiservices.ubi.com/v3/profiles/{user_id}/validateUpdate", data=body, headers=headers, proxies=proxies)
-        check_2 = self.session.put("https://public-ubiservices.ubi.com/v3/profiles/", data=body, headers=headers, proxies=proxies)
+        check_1 = self.session.post(f"https://public-ubiservices.ubi.com/v3/profiles/{user_id}/validateUpdate", data={"nameOnPlatform": name}, headers=headers, proxies=proxies)
+        check_2 = self.session.put("https://public-ubiservices.ubi.com/v3/profiles/", data={"nameOnPlatform": name}, headers=headers, proxies=proxies)
 
         return [check_1.json(), check_2.json()] # RETURNS LIST INDEX [0, 1]
 
