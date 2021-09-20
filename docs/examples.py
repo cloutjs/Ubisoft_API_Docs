@@ -30,7 +30,6 @@ class UbiAPI(object):
             'password': password,
             'preferredLanguage': "en"
         }
-
         r = self.session.post("https://public-ubiservices.ubi.com/v3/users", json=body, headers=self.headers, proxies=proxies)
         return r.json()
 
@@ -99,24 +98,10 @@ class UbiAPI(object):
         return r.json()
 
 
+
 if __name__ == "__main__":
-    # [OPTION #1] LOAD THE API
-    # ////////////////////////////////
-    account="EMAIL:PASSWORD"
-    ubi = UbiAPI(UbiAPI().login(account=account))
+    ubi = UbiAPI(UbiAPI().login(account="EMAIL:PASSWORD"))
 
-
-    # [OPTION #2] LOAD THE API
-    # ////////////////////////////////
-    """EXAMPLE OF AN AUTH TOKEN: 
-            Ubi_v1 t=ewogICJ2ZXIiOiAiMSIsCiAgImFpZCI6ICJhZmI0YjQzYy1mMWY3LTQxYjctYmNlZi1hNjM1ZDhjODM4MjIiLAogICJl... (more random characters)"""
-
-    token="AUTH TOKEN"
-    ubi = UbiAPI(token)
-
-
-    # [EXAMPLE] HOW TO GET AN USER BY NAME
-    # //////////////////////////////////////
     print(
         ubi.get_user_by_name(
             name="tristan", 
