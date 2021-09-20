@@ -113,13 +113,23 @@ class UbiAPI(object):
 
 
 
+
 if __name__ == "__main__":
-    ubi = UbiAPI(UbiAPI(None).login(account="email:password")[1])
+    account = "email:password"
+    ubi = UbiAPI(UbiAPI(None).login(account=account)[1])
     auth_token = ubi.auth
 
     print(
         ubi.get_user_by_name(
             name="tristan", 
+            proxies=None
+        )
+    )
+
+    print(
+        ubi.add_friend(
+            friend_id = "Friend ID",
+            account=account,
             proxies=None
         )
     )
