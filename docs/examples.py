@@ -5,11 +5,12 @@ class UbiAPI(object):
     # ////////////////////////////////////
     def __init__(self, auth):
         self.session = requests.Session()
+        self.auth = auth
         self.headers = {
             'Ubi-AppId': "2c2d31af-4ee4-4049-85dc-00dc74aef88f",
             "Ubi-RequestedPlatformType": "uplay",
             "User-Agent":"Mozilla/5.0 (iPhone; CPU iPhone OS 5_1 like Mac OS X) AppleWebKit/534.46 (KHTML, like Gecko) Version/5.1 Mobile/9B179 Safari/7534.48.3",
-            "Authorization": auth
+            "Authorization": self.auth
         }
 
 
@@ -66,7 +67,7 @@ class UbiAPI(object):
             self.headers["Authorization"] = token
         
         if login is not None:
-            self.headers["Authorization"] = self.login(login)
+            self.headers["Authorization"] = self.login(account=login, proxies=None)[1]
 
 
     # LOGIN TO AN ACCOUNT EMAIL:PASSWORD
@@ -76,14 +77,15 @@ class UbiAPI(object):
         headers["Authorization"] = "Basic " + base64.b64encode(bytes(account, "utf-8")).decode("utf-8")
         r = self.session.post("https://public-ubiservices.ubi.com/v3/profiles/sessions", json={"Content-Type":"application/json"}, headers=headers, proxies=proxies)
         if r.status_code == 200 and r.json()["ticket"]:
-            return "Ubi_v1 t=" + r.json()["ticket"]
+            return [r.json(), "Ubi_v1 t=" + r.json()["ticket"]]
 
 
     # CHANGE ACCOUNT NAME
     # ////////////////////////////////////
     def change_name(self, user_id=None, name=None, login=None, proxies=None): # LOGIN = "EMAIL:PASSWORD"
         if login is not None:
-            headers = self.login(login)
+            headers=self.headers
+            headers["Authorization"] = self.login(account=login)[1]
 
         check_1 = self.session.post(f"https://public-ubiservices.ubi.com/v3/profiles/{user_id}/validateUpdate", data={"nameOnPlatform": name}, headers=headers, proxies=proxies)
         check_2 = self.session.put("https://public-ubiservices.ubi.com/v3/profiles/", data={"nameOnPlatform": name}, headers=headers, proxies=proxies)
@@ -98,9 +100,21 @@ class UbiAPI(object):
         return r.json()
 
 
+    # ADD A FRIEND
+    # ////////////////////////////////////
+    def add_friend(self, user_id=None, friend_id=None, login=None):
+        headers = self.headers
+        headers["ubi-sessionid"] = self.login(account=login, proxies=None)[0]['sessionId']
+        headers["Authorization"] = login
+        r = self.session.post(f"https://public-ubiservices.ubi.com/v3/profiles/{user_id}/friends", json={"friends": [friend_id]}, headers=self.headers)
+        return r.json()
+
+
+
 
 if __name__ == "__main__":
-    ubi = UbiAPI(UbiAPI().login(account="EMAIL:PASSWORD"))
+    ubi = UbiAPI(UbiAPI(None).login(account="email:password", proxies=None)[1])
+    auth_token = ubi.auth
 
     print(
         ubi.get_user_by_name(
