@@ -1,4 +1,4 @@
-import requests, string, random, base64
+import requests, base64
 
 class UbiAPI(object):
     # DECLARE HEADERS AND ADD AUTH TOKEN
@@ -16,15 +16,6 @@ class UbiAPI(object):
     # CREATE A NEW ACCOUNT
     # ////////////////////////////////////
     def create_account(self, name=None, email=None, password=None, proxies=None):
-        if name is None:
-            name = ''.join(random.choice(string.ascii_lowercase + string.ascii_uppercase) for _ in range(7))
-
-        if email is None:
-            email = f"{name}-{''.join(random.choice(string.ascii_lowercase + string.ascii_uppercase) for _ in range(7))}@gmail.com"
-
-        if password is None:
-            password = ''.join(random.choice(string.ascii_lowercase + string.ascii_uppercase) for _ in range(12))
-
         data = {
             'age': None,
             'confirmedEmail': email,
