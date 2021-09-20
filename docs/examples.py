@@ -114,7 +114,7 @@ class UbiAPI(object):
 
 
 if __name__ == "__main__":
-    ubi = UbiAPI(UbiAPI(None).login(account="wd278d28@gmail.com:tristan12*", proxies=None)[1])
+    ubi = UbiAPI(UbiAPI(None).login(account="email:password", proxies=None)[1])
     auth_token = ubi.auth
 
     print(
