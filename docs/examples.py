@@ -107,7 +107,7 @@ class UbiAPI(object):
         login = self.login(account=account, proxies=None)
         headers["ubi-sessionid"] = login[0]['sessionId']
         headers["Authorization"] = login[1]
-        r = self.session.post(f"https://public-ubiservices.ubi.com/v3/profiles/{login[0]['userId']}/friends", json={"friends": [friend_id]}, headers=self.headers)
+        r = self.session.post(f"https://public-ubiservices.ubi.com/v3/profiles/{login[0]['userId']}/friends", json={"friends": [friend_id]}, headers=headers)
         return r.json()
 
 
