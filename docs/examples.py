@@ -122,7 +122,7 @@ if __name__ == "__main__":
     'EXAMPLE OF AN AUTH TOKEN: "Ubi_v1 t=ewogICJ2ZXIiOiAiMSIsCiAgImFpZCI6ICJhZmI0YjQzYy1mMWY3LTQxYjctYmNlZi1hNjM1ZDhjODM4MjIiLAogICJl"... (more random characters)'
 
     token="AUTH TOKEN"
-    ubi = UbiAPI("AUTH TOKEN")
+    ubi = UbiAPI(token)
 
 
     # [EXAMPLE] HOW TO GET AN USER BY NAME
