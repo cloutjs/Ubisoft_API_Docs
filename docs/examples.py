@@ -118,7 +118,8 @@ if __name__ == "__main__":
 
     # [OPTION #2] LOAD THE API
     # ////////////////////////////////
-    'EXAMPLE OF AN AUTH TOKEN: "Ubi_v1 t=ewogICJ2ZXIiOiAiMSIsCiAgImFpZCI6ICJhZmI0YjQzYy1mMWY3LTQxYjctYmNlZi1hNjM1ZDhjODM4MjIiLAogICJl"... (more random characters)'
+    """EXAMPLE OF AN AUTH TOKEN: 
+            Ubi_v1 t=ewogICJ2ZXIiOiAiMSIsCiAgImFpZCI6ICJhZmI0YjQzYy1mMWY3LTQxYjctYmNlZi1hNjM1ZDhjODM4MjIiLAogICJl... (more random characters)"""
 
     token="AUTH TOKEN"
     ubi = UbiAPI(token)
