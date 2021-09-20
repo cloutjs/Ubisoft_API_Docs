@@ -102,19 +102,19 @@ class UbiAPI(object):
 
     # ADD A FRIEND
     # ////////////////////////////////////
-    def add_friend(self, user_id=None, friend_id=None, account=None):
+    def add_friend(self, friend_id=None, account=None):
         headers = self.headers
         login = self.login(account=account, proxies=None)
         headers["ubi-sessionid"] = login[0]['sessionId']
         headers["Authorization"] = login[1]
-        r = self.session.post(f"https://public-ubiservices.ubi.com/v3/profiles/{user_id}/friends", json={"friends": [friend_id]}, headers=self.headers)
+        r = self.session.post(f"https://public-ubiservices.ubi.com/v3/profiles/{login[0]['userId']}/friends", json={"friends": [friend_id]}, headers=self.headers)
         return r.json()
 
 
 
 
 if __name__ == "__main__":
-    ubi = UbiAPI(UbiAPI(None).login(account="email:password", proxies=None)[1])
+    ubi = UbiAPI(UbiAPI(None).login(account="wd278d28@gmail.com:tristan12*", proxies=None)[1])
     auth_token = ubi.auth
 
     print(
