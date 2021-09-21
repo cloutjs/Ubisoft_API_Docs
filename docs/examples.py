@@ -1,8 +1,6 @@
 import requests, base64
 
 class UbiAPI(object):
-    # DECLARE HEADERS AND ADD AUTH TOKEN
-    # ////////////////////////////////////
     def __init__(self, auth):
         self.session = requests.Session()
         self.auth = auth
@@ -113,7 +111,7 @@ class UbiAPI(object):
 
 
 
-
+    
 if __name__ == "__main__":
     account = "email:password"
     ubi = UbiAPI(UbiAPI(None).login(account=account)[1])
@@ -128,7 +126,7 @@ if __name__ == "__main__":
 
     print(
         ubi.add_friend(
-            friend_id = "Friend ID",
+            friend_id="Friend ID",
             account=account,
             proxies=None
         )
