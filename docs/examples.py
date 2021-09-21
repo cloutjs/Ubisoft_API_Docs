@@ -10,10 +10,12 @@ class UbiAPI(object):
             "User-Agent":"Mozilla/5.0 (iPhone; CPU iPhone OS 5_1 like Mac OS X) AppleWebKit/534.46 (KHTML, like Gecko) Version/5.1 Mobile/9B179 Safari/7534.48.3",
             "Authorization": "Basic " + base64.b64encode(bytes(auth, "utf-8")).decode("utf-8")
         }
+        self.session_headers = self.headers
 
         r = self.session.post("https://public-ubiservices.ubi.com/v3/profiles/sessions", json={"Content-Type":"application/json"}, headers=self.headers)
-        if r.status_code == 200 and r.json()["ticket"]:
+        if r.status_code == 200:
             self.headers["Authorization"] = "Ubi_v1 t=" + r.json()["ticket"]
+            self.session_headers["ubi-sessionid"] = r.json()['sessionId']
 
 
     # CREATE A NEW ACCOUNT
@@ -96,14 +98,13 @@ class UbiAPI(object):
     # ADD A FRIEND
     # ////////////////////////////////////
     def add_friend(self, friend_name=None, account=None, proxies=None, new_login=False):
-        headers = self.headers
         user = self.get_user_by_name(name=friend_name, proxies=proxies)
         if new_login:
             login = self.login(account=account, proxies=proxies)
-            headers["ubi-sessionid"] = login[0]['sessionId']
-            headers["Authorization"] = login[1]
+            self.session_headers["ubi-sessionid"] = login[0]['sessionId']
+            self.session_headers["Authorization"] = login[1]
         
-        r = self.session.post(f"https://public-ubiservices.ubi.com/v3/profiles/{login[0]['profileId']}/friends", json={"friends": [user['profiles'][0]['profileId']]}, headers=headers)
+        r = self.session.post(f"https://public-ubiservices.ubi.com/v3/profiles/{login[0]['profileId']}/friends", json={"friends": [user['profiles'][0]['profileId']]}, headers=self.session_headers)
         if r.status_code == 200:
             return True
         return False
