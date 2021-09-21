@@ -10,11 +10,11 @@ class UbiAPI(object):
             "User-Agent":"Mozilla/5.0 (iPhone; CPU iPhone OS 5_1 like Mac OS X) AppleWebKit/534.46 (KHTML, like Gecko) Version/5.1 Mobile/9B179 Safari/7534.48.3",
             "Authorization": "Basic " + base64.b64encode(bytes(auth, "utf-8")).decode("utf-8")
         }
-        self.session_headers = self.headers
 
         r = self.session.post("https://public-ubiservices.ubi.com/v3/profiles/sessions", json={"Content-Type":"application/json"}, headers=self.headers)
         if r.status_code == 200:
             self.headers["Authorization"] = "Ubi_v1 t=" + r.json()["ticket"]
+            self.session_headers = self.headers
             self.session_headers["ubi-sessionid"] = r.json()['sessionId']
             
             
