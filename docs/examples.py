@@ -10,7 +10,7 @@ class UbiAPI(object):
             "User-Agent":"Mozilla/5.0 (iPhone; CPU iPhone OS 5_1 like Mac OS X) AppleWebKit/534.46 (KHTML, like Gecko) Version/5.1 Mobile/9B179 Safari/7534.48.3",
             "Authorization": "Basic " + base64.b64encode(bytes(auth, "utf-8")).decode("utf-8")
         }
-        
+
         r = self.session.post("https://public-ubiservices.ubi.com/v3/profiles/sessions", json={"Content-Type":"application/json"}, headers=self.headers)
         if r.status_code == 200 and r.json()["ticket"]:
             self.headers["Authorization"] = "Ubi_v1 t=" + r.json()["ticket"]
@@ -79,7 +79,6 @@ class UbiAPI(object):
             login = self.login(account=account, proxies=proxies)
             headers=self.headers
             headers["Authorization"] = login[1]
-            headers["ubi-sessionid"] = login[0]['sessionId']
 
         check_1 = self.session.post(f"https://public-ubiservices.ubi.com/v3/profiles/{login[0]['userId']}/validateUpdate", data={"nameOnPlatform": name}, headers=headers, proxies=proxies)
         check_2 = self.session.put("https://public-ubiservices.ubi.com/v3/profiles/", data={"nameOnPlatform": name}, headers=headers, proxies=proxies)
@@ -97,12 +96,12 @@ class UbiAPI(object):
     # ADD A FRIEND
     # ////////////////////////////////////
     def add_friend(self, friend_name=None, account=None, proxies=None):
-        get_user = self.get_user_by_name(name=friend_name, proxies=proxies)
+        user = self.get_user_by_name(name=friend_name, proxies=proxies)
         login = self.login(account=account, proxies=proxies)
         headers = self.headers
         headers["ubi-sessionid"] = login[0]['sessionId']
         headers["Authorization"] = login[1]
-        r = self.session.post(f"https://public-ubiservices.ubi.com/v3/profiles/{login[0]['profileId']}/friends", json={"friends": [get_user['profiles'][0]['profileId']]}, headers=headers)
+        r = self.session.post(f"https://public-ubiservices.ubi.com/v3/profiles/{login[0]['profileId']}/friends", json={"friends": [user['profiles'][0]['profileId']]}, headers=headers)
         if r.status_code == 200:
             return True
         return False
