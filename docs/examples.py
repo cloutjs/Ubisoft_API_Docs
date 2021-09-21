@@ -16,8 +16,8 @@ class UbiAPI(object):
         if r.status_code == 200:
             self.headers["Authorization"] = "Ubi_v1 t=" + r.json()["ticket"]
             self.session_headers["ubi-sessionid"] = r.json()['sessionId']
-
-
+            
+            
     # CREATE A NEW ACCOUNT
     # ////////////////////////////////////
     def create_account(self, name=None, email=None, password=None, proxies=None):
