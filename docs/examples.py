@@ -95,12 +95,14 @@ class UbiAPI(object):
 
     # ADD A FRIEND
     # ////////////////////////////////////
-    def add_friend(self, friend_name=None, account=None, proxies=None):
+    def add_friend(self, friend_name=None, account=None, proxies=None, new_login=False):
+        if new_login:
+            login = self.login(account=account, proxies=proxies)
+            headers = self.headers
+            headers["ubi-sessionid"] = login[0]['sessionId']
+            headers["Authorization"] = login[1]
+            
         user = self.get_user_by_name(name=friend_name, proxies=proxies)
-        login = self.login(account=account, proxies=proxies)
-        headers = self.headers
-        headers["ubi-sessionid"] = login[0]['sessionId']
-        headers["Authorization"] = login[1]
         r = self.session.post(f"https://public-ubiservices.ubi.com/v3/profiles/{login[0]['profileId']}/friends", json={"friends": [user['profiles'][0]['profileId']]}, headers=headers)
         if r.status_code == 200:
             return True
@@ -124,6 +126,7 @@ if __name__ == "__main__":
         ubi.add_friend(
             friend_name="godly",
             account=account,
-            proxies=None
+            proxies=None,
+            new_login=True
         )
     )
