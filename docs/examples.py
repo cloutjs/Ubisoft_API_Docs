@@ -70,8 +70,8 @@ class UbiAPI(object):
         headers = self.headers
         headers["Authorization"] = "Basic " + base64.b64encode(bytes(account, "utf-8")).decode("utf-8")
         r = self.session.post("https://public-ubiservices.ubi.com/v3/profiles/sessions", json={"Content-Type":"application/json"}, headers=headers, proxies=proxies)
-        if r.status_code == 200 and r.json()["ticket"]:
-            return [r.json(), "Ubi_v1 t=" + r.json()["ticket"]] # RETURNS LIST INDEX [0, 1]
+        if r.status_code == 200:
+            return [r.json(), "Ubi_v1 t=" + r.json()["ticket"], r.json()['sessionId']] # RETURNS LIST INDEX [0, 1]
 
 
     # CHANGE ACCOUNT NAME
@@ -101,7 +101,7 @@ class UbiAPI(object):
         user = self.get_user_by_name(name=friend_name, proxies=proxies)
         if new_login:
             login = self.login(account=account, proxies=proxies)
-            self.session_headers["ubi-sessionid"] = login[0]['sessionId']
+            self.session_headers["ubi-sessionid"] = login[2]
             self.session_headers["Authorization"] = login[1]
         
         r = self.session.post(f"https://public-ubiservices.ubi.com/v3/profiles/{login[0]['profileId']}/friends", json={"friends": [user['profiles'][0]['profileId']]}, headers=self.session_headers)
