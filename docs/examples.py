@@ -69,7 +69,7 @@ class UbiAPI(object):
         headers["Authorization"] = "Basic " + base64.b64encode(bytes(account, "utf-8")).decode("utf-8")
         r = self.session.post("https://public-ubiservices.ubi.com/v3/profiles/sessions", json={"Content-Type":"application/json"}, headers=headers, proxies=proxies)
         if r.status_code == 200 and r.json()["ticket"]:
-            return [r.json(), "Ubi_v1 t=" + r.json()["ticket"]]
+            return [r.json(), "Ubi_v1 t=" + r.json()["ticket"]] # RETURNS LIST INDEX [0, 1]
 
 
     # CHANGE ACCOUNT NAME
