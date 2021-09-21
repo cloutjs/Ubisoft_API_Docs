@@ -8,8 +8,12 @@ class UbiAPI(object):
             'Ubi-AppId': "2c2d31af-4ee4-4049-85dc-00dc74aef88f",
             "Ubi-RequestedPlatformType": "uplay",
             "User-Agent":"Mozilla/5.0 (iPhone; CPU iPhone OS 5_1 like Mac OS X) AppleWebKit/534.46 (KHTML, like Gecko) Version/5.1 Mobile/9B179 Safari/7534.48.3",
-            "Authorization": self.auth
+            "Authorization": "Basic " + base64.b64encode(bytes(auth, "utf-8")).decode("utf-8")
         }
+        
+        r = self.session.post("https://public-ubiservices.ubi.com/v3/profiles/sessions", json={"Content-Type":"application/json"}, headers=self.headers)
+        if r.status_code == 200 and r.json()["ticket"]:
+            self.headers["Authorization"] = "Ubi_v1 t=" + r.json()["ticket"]
 
 
     # CREATE A NEW ACCOUNT
@@ -35,7 +39,7 @@ class UbiAPI(object):
 
     # GET AN USERS PROFILE BY ID
     # ////////////////////////////////////
-    def get_profile_by_id(self, user_id=None, proxies=None):
+    def get_user_by_id(self, user_id=None, proxies=None):
         r = self.session.get(f"https://public-ubiservices.ubi.com/v2/profiles?userId={user_id}", headers=self.headers, proxies=proxies)
         return r.json()
 
@@ -58,16 +62,6 @@ class UbiAPI(object):
         return r.json()
 
 
-    # CHANGE THE AUTH TOKEN
-    # ////////////////////////////////////
-    def auth(self, token=None, login=None, proxies=None):
-        if token is not None:
-            self.headers["Authorization"] = token
-        
-        if login is not None:
-            self.headers["Authorization"] = self.login(account=login, proxies=proxies)[1]
-
-
     # LOGIN TO AN ACCOUNT EMAIL:PASSWORD
     # ////////////////////////////////////
     def login(self, account=None, proxies=None):
@@ -80,11 +74,12 @@ class UbiAPI(object):
 
     # CHANGE ACCOUNT NAME
     # ////////////////////////////////////
-    def change_name(self, name=None, login=None, proxies=None):
-        if login is not None:
+    def change_name(self, name=None, account=None, proxies=None):
+        if account is not None:
+            login = self.login(account=account, proxies=proxies)
             headers=self.headers
-            login = self.login(account=login, proxies=proxies)
             headers["Authorization"] = login[1]
+            headers["ubi-sessionid"] = login[0]['sessionId']
 
         check_1 = self.session.post(f"https://public-ubiservices.ubi.com/v3/profiles/{login[0]['userId']}/validateUpdate", data={"nameOnPlatform": name}, headers=headers, proxies=proxies)
         check_2 = self.session.put("https://public-ubiservices.ubi.com/v3/profiles/", data={"nameOnPlatform": name}, headers=headers, proxies=proxies)
@@ -101,32 +96,34 @@ class UbiAPI(object):
 
     # ADD A FRIEND
     # ////////////////////////////////////
-    def add_friend(self, friend_id=None, account=None, proxies=None):
-        headers = self.headers
+    def add_friend(self, friend_name=None, account=None, proxies=None):
+        get_user = self.get_user_by_name(name=friend_name, proxies=proxies)
         login = self.login(account=account, proxies=proxies)
+        headers = self.headers
         headers["ubi-sessionid"] = login[0]['sessionId']
         headers["Authorization"] = login[1]
-        r = self.session.post(f"https://public-ubiservices.ubi.com/v3/profiles/{login[0]['userId']}/friends", json={"friends": [friend_id]}, headers=headers)
-        return r.json()
+        r = self.session.post(f"https://public-ubiservices.ubi.com/v3/profiles/{login[0]['profileId']}/friends", json={"friends": [get_user['profiles'][0]['profileId']]}, headers=headers)
+        if r.status_code == 200:
+            return True
+        return False
 
 
 
-    
 if __name__ == "__main__":
     account = "email:password"
-    ubi = UbiAPI(UbiAPI(None).login(account=account)[1])
+    ubi = UbiAPI(account)
     auth_token = ubi.auth
 
     print(
         ubi.get_user_by_name(
-            name="tristan", 
+            name="godly", 
             proxies=None
         )
     )
 
     print(
         ubi.add_friend(
-            friend_id="Friend ID",
+            friend_name="godly",
             account=account,
             proxies=None
         )
