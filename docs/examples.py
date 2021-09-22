@@ -1,3 +1,4 @@
+import random, string
 from .api import *
 
 # LOADING API
