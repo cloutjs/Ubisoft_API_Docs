@@ -1,4 +1,4 @@
-import requests, base64, random, string
+import requests, base64
 
 class UbiAPI(object):
     def __init__(self, auth):
