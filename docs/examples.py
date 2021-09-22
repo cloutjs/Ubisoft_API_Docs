@@ -1,5 +1,5 @@
 import random, string
-from .api import *
+from api import *
 
 # LOADING API
 # /////////////////
